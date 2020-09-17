@@ -11,6 +11,9 @@ Row=0
 Products=[]
 Position=[]
 Obstacles=[]
+billing_list=[]
+trolley_list=[]
+start_list=[]
 d=[]
 
 main = Tk()
@@ -44,6 +47,9 @@ class layout_button():
     product_name=''
     product_position=''
     obst_position=''
+    start_position=''
+    billing_position=''
+    trolley_position=''
     myframe=call_frame()
     myframe.destroy()
     x=0
@@ -55,7 +61,7 @@ class layout_button():
         self.b = Button(myframe,width=8,height=4,bg="white")
         self.b.grid(row=self.x,column=self.y)
         self.b.configure(command=self.highlight)
-        #print(self.x,self.y)
+        print(self.x,self.y)
     
     def entry(self):
         size = self.product_name.split(' ')
@@ -77,12 +83,45 @@ class layout_button():
         self.product_name=''
         self.product_position=''
         self.obst_position=''
+        self.start_position=''
+        self.billing_position=''
+        self.trolley_position=''
         self.b.configure(text=self.product_name,anchor='n')
         
     def obst(self):
         self.product_name=''
         self.product_position=''
+        self.start_position=''
+        self.billing_position=''
+        self.trolley_position=''
         self.obst_position='['+str(self.y)+','+str(Column-self.x)+']'
+        self.b.configure(text=self.product_name,anchor='n')
+        
+    def start(self):
+        self.product_name=''
+        self.product_position=''
+        self.obst_position=''
+        self.start_position='['+str(self.y)+','+str(Column-self.x)+']'
+        self.billing_position=''
+        self.trolley_position=''
+        self.b.configure(text=self.product_name,anchor='n')
+
+    def billing(self):
+        self.product_name=''
+        self.product_position=''
+        self.start_position=''
+        self.billing_position='['+str(self.y)+','+str(Column-self.x)+']'
+        self.trolley_position=''
+        self.obst_position=''
+        self.b.configure(text=self.product_name,anchor='n')
+        
+    def trolley(self):
+        self.product_name=''
+        self.product_position=''
+        self.start_position=''
+        self.billing_position=''
+        self.trolley_position='['+str(self.y)+','+str(Column-self.x)+']'
+        self.obst_position=''
         self.b.configure(text=self.product_name,anchor='n')
         
     def popup(self):
@@ -113,17 +152,31 @@ class layout_button():
         save.grid(row=2,column=3)
 
     def highlight(self):
-        #print(v.get())
+        print(v.get())
         if v.get()=='0':
             self.b.configure(bg = "red")
             self.obst()
         elif v.get()=='1':
-            self.b.configure(bg = "green")
+            self.b.configure(bg = "yellow")
             self.popup()
+        elif v.get()=='2':
+            self.start()
+            self.b.configure(bg = "green")
+            self.b.configure(text='Entry')
+        elif v.get()=='3':
+            self.billing()
+            self.b.configure(bg = "green")
+            self.b.configure(text='Billing')
+            
+        elif v.get()=='4':
+            self.trolley()
+            self.b.configure(bg = "blue")
+            self.b.configure(text='Trolley')
+            
         else:
             self.b.configure(bg = "white")
             self.erase()
-        #print(self.b.cget('bg'))
+        print(self.b.cget('bg'))
 
 def generate():
     global d
@@ -131,7 +184,7 @@ def generate():
     global value
     global Row
     global Column
-    #print(Xaxis.get(),Yaxis.get())
+    print(Xaxis.get(),Yaxis.get())
     Row = int(Xaxis.get())
     Column = int(Yaxis.get())
     myframe=call_frame()
@@ -139,19 +192,21 @@ def generate():
     Product_button = Radiobutton(myframe,variable=v,text="Product",value=1,indicator=0, bg="yellow").grid(row=0,column=0)
     obstacle_button = Radiobutton(myframe,variable=v, text="Obstacle",value=0,indicator=0,bg="yellow").grid(row=0,column=1)
     remove_button = Radiobutton(myframe,variable=v, text="Deselct",value=9,indicator=0,bg="yellow").grid(row=0,column=2)
+    start_button = Radiobutton(myframe,variable=v, text="Start",value=2,indicator=0,bg="yellow").grid(row=0,column=3)
+    billing_button = Radiobutton(myframe,variable=v, text="Billing",value=3,indicator=0,bg="yellow").grid(row=0,column=4)
+    trolley_button = Radiobutton(myframe,variable=v, text="Trolley",value=4,indicator=0,bg="yellow").grid(row=0,column=5)
+
     try:
         for i in range(1,Row+1):
             d.append([])
             for j in range(0,Column):
                 d[i-1].append(layout_button(myframe,i,j))
     except:
-        pass
-        #print("Entered")
+        print("Entered")
 
 def save():
     for item in d:
         for obj in item:
-          
             if obj.product_name!='':
                 temp1=obj.product_name.split(' ')
                 temp2=obj.product_position.split(' ')
@@ -169,7 +224,14 @@ def save():
                     Position.append(obj.product_position)
             if obj.obst_position!='':
                 Obstacles.append(obj.obst_position)
-    #print(Products,Position,Obstacles)
+            if obj.start_position!='':
+                start_list.append(obj.start_position)
+            if obj.billing_position!='':
+                billing_list.append(obj.billing_position)
+            if obj.trolley_position!='':
+                trolley_list.append(obj.trolley_position)
+
+    print(Products,Position,Obstacles)
     file = open("buffer.txt", "w")
     file.write("")
     file.write(str(Row)+" "+str(Column)+"\n")
@@ -183,7 +245,21 @@ def save():
         for co in item:
             if co!='[' and co!=']' and co!=',':
                 file.write(str(co)+" ")
-                
+    file.write("\n")
+    for item in start_list:
+        for co in item:
+            if co!='[' and co!=']' and co!=',':
+                file.write(str(co)+" ")
+    file.write("\n")    
+    for item in billing_list:
+        for co in item:
+            if co!='[' and co!=']' and co!=',':
+                file.write(str(co)+" ")
+    file.write("\n")
+    for item in trolley_list:
+        for co in item:
+            if co!='[' and co!=']' and co!=',':
+                file.write(str(co)+" ")
     file.write("\n")
     main.destroy()    
 
@@ -197,7 +273,7 @@ def check():
     flag=True
     Yaxis=StringVar(main,"5")
     Xaxis=StringVar(main,"5")
-    #print("Enteres")
+    print("Enteres")
     row_label=Label(main,text="Enter number of rows:",fg="black",font=("Helvetica", 15 )).place(x=50,y=200)
     row_input = Entry(main, textvariable=Xaxis ).place(x=300,y=205)
     column_label=Label(main,text="Enter number of columns:",fg="black",font=("Helvetica", 15 )).place(x=50,y=300)
@@ -209,7 +285,7 @@ def check():
 
 def Host():
     main.destroy()
-    #print("Host_code")
+    print("Host_code")
 
 selectframe=Frame()
 def select():
