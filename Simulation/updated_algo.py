@@ -147,7 +147,7 @@ def main():
     generate_cost_map()
     minimum_distance , minimum_path = shortest_path(cost_map)
     print(minimum_distance , minimum_path)
-  
-    
+
+
 if __name__=='__main__':
     main()
